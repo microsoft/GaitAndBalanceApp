@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="GaitAndBalanceApp.UIComponents.TrendTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GaitAndBalanceApp.UIComponents"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1024">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <local:CurrentIdentifier x:Name="currentIdentifier" Grid.Row="0" CurrentIdentifierChanged="currentIdentifier_CurrentIdentifierChanged"/>
+        <DataGrid Grid.Row="1" x:Name="availableFiles" FontSize="18" Background="White"
+                              AutoGenerateColumns="False" HorizontalAlignment="Stretch" SelectionMode="Single" 
+                              SelectionChanged="availableFiles_SelectionChanged" IsReadOnly="True" Grid.ColumnSpan="2">
+
+        </DataGrid>
+
+        <Canvas x:Name="trend" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SizeChanged="trend_SizeChanged" />
+
+    </Grid>
+</UserControl>

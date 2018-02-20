@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="GaitAndBalanceApp.UIComponents.RecordTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GaitAndBalanceApp.UIComponents"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1024">
+    <Grid Background="White" KeyDown="Remote_KeyDown">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="8*"/>
+        </Grid.RowDefinitions>
+        <local:CurrentIdentifier x:Name="currentIdentifier" Grid.Row="0"/>
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="6*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Duration" Grid.Column="0"></Label>
+            <TextBox Grid.Column="1" x:Name="duration" Text="120" Background="LightGray"/>
+            <Button x:Name="Start" Content="Start" Grid.Column="2" Click="Start_Click" Background="Yellow" Grid.ColumnSpan="2"/>
+            <Button x:Name="Cancel" Content="Cancel" Grid.Column="2" Click="Cancel_Click" Background="LightSalmon" Visibility="{Binding ElementName=Stop, Path=Visibility}"/>
+            <Button x:Name="Stop" Content="Stop" Grid.Column="3" Click="Stop_Click" Background="SpringGreen" Visibility="Hidden"/>
+            <Button x:Name="Settings" Content="Settings" Grid.Column="4" Background="Aqua" Click="Settings_Click"/>
+        </Grid>
+        <RichTextBox HorizontalAlignment="Left" Grid.Row="2" FontSize="20" x:Name="log" Background="black"/>
+        <Label HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="20" x:Name="fps" Background="DarkGray" Grid.Row="3" Foreground="Gold"/>
+        <local:SubjectView x:Name="subjectView"  Grid.Row="3"/>
+
+    </Grid>
+</UserControl>

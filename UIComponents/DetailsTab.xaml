@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="GaitAndBalanceApp.UIComponents.DetailsTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:GaitAndBalanceApp.UIComponents"
+             DataContext="{Binding RelativeSource={RelativeSource self}}"
+             d:DesignHeight="600" d:DesignWidth="1024">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="files" Source="{Binding Path=files}"/>
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="6*"/>
+        </Grid.RowDefinitions>
+        <local:CurrentIdentifier x:Name="currentIdentifier" Grid.Row="0" CurrentIdentifierChanged="currentIdentifier_CurrentIdentifierChanged"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="17*" />
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="8*" />
+            </Grid.RowDefinitions>
+            <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="0" x:Name="recordTimes" FontSize="20" SelectionChanged="recordTimes_SelectionChanged"/>
+            <DataGrid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="0" x:Name="recordDetails" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"/>
+            <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="1" x:Name="exportTimeDomain" Background="Navy" Content="Export" Click="exportTimeAndFreqDomain_Click" FontSize="14" Foreground="White"/>
+            <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="2" x:Name="play" Content="Play" Background="GreenYellow" Click="play_Click"/>
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Slider HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" x:Name="frameSelector" Orientation="Horizontal" TickPlacement="BottomRight" Background="Black" Foreground="Gray" Minimum="0" Value="0" ValueChanged="frameSelector_ValueChanged" />
+                <Label HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" x:Name="segmentTypeLabel"/>
+
+            </Grid>
+            <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="2" x:Name="timeLineCanvas" >
+                <Polyline HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  x:Name="timeLine" StrokeThickness="1" Stretch="None" />
+                <Ellipse x:Name="timeLineEllipse"  Width="20" Height="20" Fill="Transparent" Stroke="Red"/>
+                <Label x:Name="timeLineMin" FontSize="10" Background="Transparent"/>
+                <Label x:Name="timeLineXMax" FontSize="10" Background="Transparent"/>
+                <Label x:Name="timeLineZMax" FontSize="10" Background="Transparent"/>
+            </Canvas>
+        </Grid>
+        <local:SubjectView x:Name="subjectView" Grid.Row="2"/>
+        
+    </Grid>
+</UserControl>
