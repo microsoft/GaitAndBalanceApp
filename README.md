@@ -1,4 +1,14 @@
 
+<p>The Gait and Balance app uses the Kinect for Windows (V2) to measure different metrics related to gait and balance. This can be used, for example, for assessing risk of fall among older adults or for tracking the progress of different treatments.<br>
+<br>
+<br>
+This tool allows recording subjects using the Kinect for Windows sensor as well as analyzing the recorded sessions and tracking changes over time.</p>
+
+
+![Main Screen](https://github.com/Microsoft/GaitAndBalanceApp/wiki/Home_gb1_mainScreen_2.png)
+
+See the wiki page in the GitHub repository for documentation.
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
