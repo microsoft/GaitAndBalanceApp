@@ -16,7 +16,7 @@
             <RowDefinition Height="8*"/>
             <RowDefinition Height="6*"/>
         </Grid.RowDefinitions>
-        <local:CurrentIdentifier x:Name="currentIdentifier" Grid.Row="0" CurrentIdentifierChanged="currentIdentifier_CurrentIdentifierChanged"/>
+        <local:CurrentIdentifier x:Name="currentIdentifier" Grid.Row="0" CurrentIdentifierChanged="CurrentIdentifier_CurrentIdentifierChanged"/>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -27,16 +27,16 @@
                 <RowDefinition Height="3*" />
                 <RowDefinition Height="8*" />
             </Grid.RowDefinitions>
-            <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="0" x:Name="recordTimes" FontSize="20" SelectionChanged="recordTimes_SelectionChanged"/>
+            <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="0" x:Name="recordTimes" FontSize="20" SelectionChanged="RecordTimes_SelectionChanged"/>
             <DataGrid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="0" x:Name="recordDetails" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"/>
-            <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="1" x:Name="exportTimeDomain" Background="Navy" Content="Export" Click="exportTimeAndFreqDomain_Click" FontSize="14" Foreground="White"/>
-            <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="2" x:Name="play" Content="Play" Background="GreenYellow" Click="play_Click"/>
+            <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="1" x:Name="exportTimeDomain" Background="Navy" Content="Export" Click="ExportTimeAndFreqDomain_Click" FontSize="14" Foreground="White"/>
+            <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="2" x:Name="play" Content="Play" Background="GreenYellow" Click="Play_Click"/>
             <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <Slider HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" x:Name="frameSelector" Orientation="Horizontal" TickPlacement="BottomRight" Background="Black" Foreground="Gray" Minimum="0" Value="0" ValueChanged="frameSelector_ValueChanged" />
+                <Slider HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" x:Name="frameSelector" Orientation="Horizontal" TickPlacement="BottomRight" Background="Black" Foreground="Gray" Minimum="0" Value="0" ValueChanged="FrameSelector_ValueChanged" />
                 <Label HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" x:Name="segmentTypeLabel"/>
 
             </Grid>

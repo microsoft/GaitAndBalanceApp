@@ -23,66 +23,70 @@ namespace GaitAndBalanceApp.UIComponents
             remove { RemoveHandler(CurrentIdentifierChangedEvent, value); }
         }
 
-        public string identifier { get { return _identifier.Text; } set { _identifier.Text = value; } }
-        public string exercise { get { return _exercise.Text; } set { _exercise.Text = value; } }
-        public string path { get { return _path.Text; } set { _path.Text = value; } }
+        public string Identifier { get { return _identifier.Text; } set { _identifier.Text = value; } }
+        public string Exercise { get { return _exercise.Text; } set { _exercise.Text = value; } }
+        public string Path { get { return _path.Text; } set { _path.Text = value; } }
 
         public CurrentIdentifier()
         {
             InitializeComponent();
-            var exercises = Exercises.getExercises();
+            var exercises = Exercises.GetExercises();
             if (exercises != null)
                 foreach (var e in exercises)
                     _exercise.Items.Add(e);
         }
 
-        private void selectPath_Click(object sender, RoutedEventArgs e)
+        private void SelectPath_Click(object sender, RoutedEventArgs e)
         {
-            var selectIdentifier = new SelectIdentifier();
-            selectIdentifier.directory = path;
-            selectIdentifier.Owner = App.Current.MainWindow;
+            var selectIdentifier = new SelectIdentifier
+            {
+                directory = Path,
+                Owner = App.Current.MainWindow
+            };
             selectIdentifier.ShowDialog();
             if (selectIdentifier.directory != null)
-                path = selectIdentifier.directory;
+                Path = selectIdentifier.directory;
             if (selectIdentifier.identifier != null)
-                identifier = selectIdentifier.identifier;
+                Identifier = selectIdentifier.identifier;
             if (selectIdentifier.exercise != null)
-                exercise = selectIdentifier.exercise;
-            notifyIndetifierChanged();
+                Exercise = selectIdentifier.exercise;
+            NotifyIndetifierChanged();
         }
 
 
-        private void notifyIndetifierChanged()
+        private void NotifyIndetifierChanged()
         {
             RaiseEvent(new RoutedEventArgs(CurrentIdentifier.CurrentIdentifierChangedEvent));
         }
 
-        private void valuesChanged(object sender, EventArgs e)
+        private void ValuesChanged(object sender, EventArgs e)
         {
-            notifyIndetifierChanged();
+            NotifyIndetifierChanged();
         }
 
-        private void instructions_Click(object sender, RoutedEventArgs e)
+        private void Instructions_Click(object sender, RoutedEventArgs e)
         {
-            string setup = Exercises.getSetup(exercise);
+            string setup = Exercises.GetSetup(Exercise);
             if (setup == null) setup = "Please select an exercise";
             if (setup.Length == 0) setup = "Sorry, no setup instructions for this exercise";
 
             Popup popup = new Popup();
-            var textBlock = new TextBlock();
-            textBlock.Text = "Guidelines for the " + exercise + " exercise.\n\n" + setup;
-            textBlock.Background = Brushes.LightBlue;
-            textBlock.Foreground = Brushes.Blue;
+            var textBlock = new TextBlock
+            {
+                Text = "Guidelines for the " + Exercise + " exercise.\n\n" + setup,
+                Background = Brushes.LightBlue,
+                Foreground = Brushes.Blue
+            };
 
             popup.Child = textBlock;
         }
 
-        private void valuesChanged(object sender, SelectionChangedEventArgs e)
+        private void ValuesChanged(object sender, SelectionChangedEventArgs e)
         {
             string setup = "Please select and exercise";
             if (e.AddedItems.Count > 0)
             {
-                setup = Exercises.getSetup((string)e.AddedItems[0]);
+                setup = Exercises.GetSetup((string)e.AddedItems[0]);
                 if (setup == null) setup = "Please select an exercise";
                 if (setup.Length == 0) setup = "Sorry, no setup instructions for this exercise";
             }
@@ -93,9 +97,9 @@ namespace GaitAndBalanceApp.UIComponents
 
     public class CurrentIdentifierChangedEventArgs : EventArgs
     {
-        public string identifier { get; set; }
-        public string exercise { get; set; }
-        public string path { get; set; }
+        public string Identifier { get; set; }
+        public string Exercise { get; set; }
+        public string Path { get; set; }
 
 
     }

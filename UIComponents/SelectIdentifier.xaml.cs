@@ -154,7 +154,7 @@ namespace GaitAndBalanceApp
                             Analyzer analyzer = null;
                             try
                             {
-                                analyzer = Exercises.getAnalyzer(exercise);
+                                analyzer = Exercises.GetAnalyzer(exercise);
                             }
                             catch (Exception e1)
                             {

@@ -34,12 +34,12 @@ namespace GaitAndBalanceApp.UIComponents
             userFiles.Rows.Clear();
             int colIndex;
             char[] underScore = new char[] { '_' };
-            if (String.IsNullOrEmpty(currentIdentifier.path) || String.IsNullOrEmpty(currentIdentifier.identifier) || String.IsNullOrEmpty(currentIdentifier.exercise))
+            if (String.IsNullOrEmpty(currentIdentifier.Path) || String.IsNullOrEmpty(currentIdentifier.Identifier) || String.IsNullOrEmpty(currentIdentifier.Exercise))
                 return;
 
             try
             {
-                var list = Directory.GetFiles(currentIdentifier.path, currentIdentifier.identifier + "_*_" + currentIdentifier.exercise + "_analysis.tsv");
+                var list = Directory.GetFiles(currentIdentifier.Path, currentIdentifier.Identifier + "_*_" + currentIdentifier.Exercise + "_analysis.tsv");
                 if (list == null) return;
                 addColumn("metric", typeof(String));
                 Array.Sort(list);

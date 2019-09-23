@@ -20,7 +20,7 @@ namespace GaitAndBalanceApp.UIComponents
     public partial class DetailsTab : UserControl
     {
         
-        public ObservableCollection<AnalysisFile> files {get; set;}
+        public ObservableCollection<AnalysisFile> Files {get; set;}
         public DataTable detailsTable;
         ObservableCollection<System.Windows.Point> points = new ObservableCollection<System.Windows.Point>();
         Trajectory trajectory = new Trajectory();
@@ -41,10 +41,10 @@ namespace GaitAndBalanceApp.UIComponents
         public DetailsTab()
         {
             bool.TryParse(ConfigurationManager.AppSettings["applyLowPassFilterToTimeDomain"], out applyLowPassFilterToTimeDomain);
-            files = new ObservableCollection<AnalysisFile>();
+            Files = new ObservableCollection<AnalysisFile>();
             detailsTable = new DataTable();
             InitializeComponent();
-            recordTimes.ItemsSource = files;
+            recordTimes.ItemsSource = Files;
             recordDetails.ItemsSource = detailsTable.DefaultView;
             detailsTable.Columns.Add("Metric", typeof(String));
             detailsTable.Columns.Add("Value", typeof(String));
@@ -61,16 +61,16 @@ namespace GaitAndBalanceApp.UIComponents
         }
 
 
-        private void currentIdentifier_CurrentIdentifierChanged(object sender, RoutedEventArgs e)
+        private void CurrentIdentifier_CurrentIdentifierChanged(object sender, RoutedEventArgs e)
         {
-            files.Clear();
-            var list = Directory.GetFiles(currentIdentifier.path, currentIdentifier.identifier + "_*_" + currentIdentifier.exercise + "_analysis.tsv");
+            Files.Clear();
+            var list = Directory.GetFiles(currentIdentifier.Path, currentIdentifier.Identifier + "_*_" + currentIdentifier.Exercise + "_analysis.tsv");
             if (list == null) return;
-            foreach (var file in list) files.Add(new AnalysisFile(file));
+            foreach (var file in list) Files.Add(new AnalysisFile(file));
             if (list.Length > 0) recordTimes.SelectedIndex = 0;
         }
 
-        private void drawTimeDomainGraph()
+        private void DrawTimeDomainGraph()
         {
             if (!trajectory.points.Any()) return;
             maxX = trajectory.points.Select(p => p.x).Max();
@@ -110,15 +110,15 @@ namespace GaitAndBalanceApp.UIComponents
 
 
             RoutedPropertyChangedEventArgs<double> e = new RoutedPropertyChangedEventArgs<double>(frameSelector.Value, frameSelector.Value, null);
-            frameSelector_ValueChanged(null, e);
+            FrameSelector_ValueChanged(null, e);
         }
 
-        private void frameSelector_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void FrameSelector_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var val = (int)e.NewValue;
             if (val >= trajectory.points.Count)
             {
-                stopPlayBack();
+                StopPlayBack();
                 return;
             }
             var p = trajectory.points[val];
@@ -127,15 +127,14 @@ namespace GaitAndBalanceApp.UIComponents
                 timeLineEllipse.Margin = new Thickness((p.z - minZ) * scale - timeLineEllipse.Width / 2, (p.x - minX) * scale - timeLineEllipse.Height / 2, 0, 0);
                 subjectView.Frame = frames[val];
             }
-            var segmentType = "-";
-            frameToSegmentName.TryGetValue(p.timeStamp, out segmentType);
+            frameToSegmentName.TryGetValue(p.timeStamp, out string segmentType);
             segmentTypeLabel.Dispatcher.Invoke(new Action(delegate ()
             {
                 segmentTypeLabel.Content = segmentType;
             }));
         }
 
-        private void recordTimes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void RecordTimes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             detailsTable.Clear();
             timeLine.Points.Clear();
@@ -143,7 +142,7 @@ namespace GaitAndBalanceApp.UIComponents
             frames.Clear();
             if (e.AddedItems.Count == 0)
                 return;
-            string filename = ((AnalysisFile)e.AddedItems[0]).fullName;
+            string filename = ((AnalysisFile)e.AddedItems[0]).FullName;
             var metrics = Metrics.load(filename);
             foreach (Metric m in metrics)
             {
@@ -166,9 +165,7 @@ namespace GaitAndBalanceApp.UIComponents
             }
                 
             string prefix = System.IO.Path.GetFileName(filename);
-            DateTime dt;
-            string exercise, identifier;
-            if (!Tools.parseFileName(prefix, out identifier, out exercise, out dt))
+            if (!Tools.parseFileName(prefix, out string identifier, out string exercise, out DateTime dt))
                 return;
             var fileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filename), identifier) + "_" + dt.ToString(Tools.dateFormat) + "_" + exercise + "_kinect.xml";
             gaitFile = new GaitFile();
@@ -183,7 +180,7 @@ namespace GaitAndBalanceApp.UIComponents
             trajectory.samplingRate = 30;
             if (applyLowPassFilterToTimeDomain) trajectory.filter();
 
-            var analyzer = Exercises.getAnalyzer(exercise);
+            var analyzer = Exercises.GetAnalyzer(exercise);
             var segments = analyzer.segmentTrajectory(trajectory);
             int segmentCounter = 0;
             foreach (var segment in segments)
@@ -200,57 +197,55 @@ namespace GaitAndBalanceApp.UIComponents
             frameSelector.Maximum = trajectory.points.Count - 1;
             frameSelector.Value = 0;
             frameSelector.TickFrequency = 300; // ten seconds
-            drawTimeDomainGraph();
+            DrawTimeDomainGraph();
         }
 
-        private void stopPlayBack()
+        private void StopPlayBack()
         {
             playbackTimer.Enabled = false;
-            playbackTimer.Elapsed -= playbackTimer_Elapsed;
+            playbackTimer.Elapsed -= PlaybackTimer_Elapsed;
             play.Background = Brushes.YellowGreen;
             play.Content = "Play";
 
         }
 
-        private void play_Click(object sender, RoutedEventArgs e)
+        private void Play_Click(object sender, RoutedEventArgs e)
         {
             if (playbackTimer.Enabled)
-                stopPlayBack();
+                StopPlayBack();
             else
             { // start playback
                 play.Background = Brushes.LightSalmon;
                 play.Content = "Pause";
                 playbackTimer.Interval = 20;
                 playbackTimer.AutoReset = true;
-                playbackTimer.Elapsed += playbackTimer_Elapsed;
+                playbackTimer.Elapsed += PlaybackTimer_Elapsed;
                 playbackTimer.Enabled = true;
             }
 
         }
 
-        void playbackTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        void PlaybackTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             frameSelector.Dispatcher.Invoke(new Action(delegate()
                 {
                     frameSelector.Value = Math.Min(frameSelector.Maximum, frameSelector.Value + 1);
                     if (frameSelector.Value == frameSelector.Maximum)
                     {
-                        stopPlayBack();
+                        StopPlayBack();
                         frameSelector.Value = 0;
                     }
                 }));
 
         }
 
-        private void exportTimeAndFreqDomain_Click(object sender, RoutedEventArgs e)
+        private void ExportTimeAndFreqDomain_Click(object sender, RoutedEventArgs e)
         {
 
-            string filename = ((AnalysisFile)recordTimes.SelectedItem).fullName;
+            string filename = ((AnalysisFile)recordTimes.SelectedItem).FullName;
 
             string prefix = System.IO.Path.GetFileName(filename);
-            DateTime dt;
-            string exercise, identifier;
-            if (!Tools.parseFileName(prefix, out identifier, out exercise, out dt))
+            if (!Tools.parseFileName(prefix, out string identifier, out string exercise, out DateTime dt))
                 return;
             var timeSeriesFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filename), identifier) + "_" + dt.ToString(Tools.dateFormat) + "_" + exercise + "_timeSeries.tsv";
 
@@ -267,7 +262,7 @@ namespace GaitAndBalanceApp.UIComponents
 
             var segmentsFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filename), identifier) + "_" + dt.ToString(Tools.dateFormat) + "_" + exercise + "_segments.tsv";
             File.WriteAllText(segmentsFileName, "timeStamp\tx\tz\tnormalized-x\tnormalized-z\tslope-x\tslope-z\tsegment-number\tsegment-type\n");
-            var analyzer = Exercises.getAnalyzer(exercise);
+            var analyzer = Exercises.GetAnalyzer(exercise);
             var segments = analyzer.segmentTrajectory(trajectory);
             int segmentCounter = 0;
             foreach (var segment in segments)
@@ -305,36 +300,27 @@ namespace GaitAndBalanceApp.UIComponents
     {
 
         private String _time;
-        public String time {get {return _time;} set {if (_time != value) {_time = value; OnPropertyChanged("timeProperty");}} }
+        public String Time {get {return _time;} set {if (_time != value) {_time = value; OnPropertyChanged("timeProperty");}} }
         private String _fullName;
-        public String fullName {get {return _fullName;} set {if (_fullName != value) {_fullName = value; OnPropertyChanged("fullNameProperty");}} }
+        public String FullName {get {return _fullName;} set {if (_fullName != value) {_fullName = value; OnPropertyChanged("fullNameProperty");}} }
         public event PropertyChangedEventHandler PropertyChanged;
 
         public AnalysisFile(string fullName)
         {
-            string identifier, exercise;
-            DateTime date;
-            Tools.parseFileName(fullName, out identifier, out exercise, out date);
+            Tools.parseFileName(fullName, out string identifier, out string exercise, out DateTime date);
 
-            this.fullName = fullName;
-            this.time = date.ToString("u");
+            this.FullName = fullName;
+            this.Time = date.ToString("u");
         }
 
         public override string ToString()
         {
- 	         return time;
+ 	         return Time;
         }
 
         protected void OnPropertyChanged(string name)
         {
-
-            PropertyChangedEventHandler handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
-
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
     }

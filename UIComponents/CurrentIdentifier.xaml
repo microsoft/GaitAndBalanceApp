@@ -16,12 +16,12 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Label Content="Identifier" HorizontalAlignment="Left" Grid.Column="0" VerticalAlignment="Center"/>
-        <TextBox Grid.Column="1" x:Name="_identifier" TextChanged="valuesChanged" Background="LightGray"/>
+        <TextBox Grid.Column="1" x:Name="_identifier" TextChanged="ValuesChanged" Background="LightGray"/>
         <Label Content="Exercise" HorizontalAlignment="Left" Grid.Column="2" VerticalAlignment="Center"/>
         <Label Grid.Column="2" x:Name="instructions" Content="i" VerticalAlignment="Top" HorizontalAlignment="Right" Background="Navy" Foreground="White"  FontSize="10" ToolTip="Please select an exercise"/>
-        <ComboBox Grid.Column="3" x:Name="_exercise" MaxDropDownHeight="700" SelectionChanged="valuesChanged" DropDownClosed="valuesChanged"/>
+        <ComboBox Grid.Column="3" x:Name="_exercise" MaxDropDownHeight="700" SelectionChanged="ValuesChanged" DropDownClosed="ValuesChanged"/>
         <Label Content="Directory" HorizontalAlignment="Left" Grid.Column="4" VerticalAlignment="Center"/>
-        <TextBox Grid.Column="5" x:Name="_path" Text="C:\gb1" TextChanged="valuesChanged" HorizontalAlignment="Stretch" Background="LightGray" VerticalAlignment="Stretch"/>
-        <Button Grid.Column="5" x:Name="selectPath" Content="..." Width="50" HorizontalAlignment="Right" Click="selectPath_Click"/>
+        <TextBox Grid.Column="5" x:Name="_path" Text="C:\gb1" TextChanged="ValuesChanged" HorizontalAlignment="Stretch" Background="LightGray" VerticalAlignment="Stretch"/>
+        <Button Grid.Column="5" x:Name="selectPath" Content="..." Width="50" HorizontalAlignment="Right" Click="SelectPath_Click"/>
     </Grid>
 </UserControl>

@@ -66,9 +66,9 @@ namespace GaitAndBalanceApp.UIComponents
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
-                currentIdentifier.identifier = args[1];
+                currentIdentifier.Identifier = args[1];
             if (args.Length > 2)
-                currentIdentifier.exercise = args[2];
+                currentIdentifier.Exercise = args[2];
             if (args.Length > 3)
                 duration.Text = args[3];
             if (args.Length > 4)
@@ -204,9 +204,9 @@ namespace GaitAndBalanceApp.UIComponents
             ClearLog();
 
             kinect.ClearMemory();
-            var path = currentIdentifier.path;
-            var identifier = currentIdentifier.identifier;
-            var exercise = currentIdentifier.exercise;
+            var path = currentIdentifier.Path;
+            var identifier = currentIdentifier.Identifier;
+            var exercise = currentIdentifier.Exercise;
             if (string.IsNullOrEmpty(identifier))
             {
                 Notify(ELevel.warning, "please specify an identifier");
@@ -255,7 +255,7 @@ namespace GaitAndBalanceApp.UIComponents
                         analysisWorker.DoWork += delegate(object s1, DoWorkEventArgs args1)
                         {
                             kinect.WriteToFile(filename, firstFrame, lastFrame);
-                            var analyzer = Exercises.getAnalyzer(exercise);
+                            var analyzer = Exercises.GetAnalyzer(exercise);
                             var metrics = analyzer.analyzeAndAnnotate(filename);
                             metrics.save(metricFileName);
                         };
@@ -287,7 +287,7 @@ namespace GaitAndBalanceApp.UIComponents
         {
             TimeSpan gapBetweenCalls = new TimeSpan(0, 0, 5);
             recordState = ErecordState.run;
-            if (readInstructions == true) voice.SpeakBlocking(Exercises.getDescription(exercise));
+            if (readInstructions == true) voice.SpeakBlocking(Exercises.GetDescription(exercise));
             Thread.Sleep(2000);
 
             if (recordState != ErecordState.run) return false;
