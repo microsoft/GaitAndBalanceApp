@@ -19,10 +19,13 @@ namespace GaitAndBalanceApp.Analysis
         }
     };
 
+
     public class Trajectory
     {
         public List<Point> points = new List<Point>();
         public List<Point> slopes = new List<Point>();
+        public List<Point> leans = new List<Point>();
+        public List<Extreams> extreams = new List<Extreams>();
         public int samplingRate;
         EinputMode input;
         EprojectionMode projection;
@@ -47,14 +50,18 @@ namespace GaitAndBalanceApp.Analysis
         public bool add(Frame fr)
         {
             float x, z, slopeX, slopeZ;
+            Extreams extreamValues;
 
-            if (fr.getCOM(out x, out z, out slopeX, out slopeZ, input, projection))
+
+            if (fr.getCOM(out x, out z, out slopeX, out slopeZ, out extreamValues, input, projection))
             {
                 if (Double.IsNaN(x) || Double.IsInfinity(x)) return false;
                 if (Double.IsNaN(z) || Double.IsInfinity(z)) return false;
 
                 points.Add(new Point(x, z, fr.FrameTime));
                 slopes.Add(new Point(slopeX, slopeZ, fr.FrameTime));
+                leans.Add(new Point(fr.LeanX, fr.LeanY, fr.FrameTime));
+                extreams.Add(extreamValues);
                 var cov = Frame.projectCovariance(fr, useKinectGround);
                 totalXX += cov[0, 0];
                 totalXZ += cov[0, 2];
@@ -65,10 +72,15 @@ namespace GaitAndBalanceApp.Analysis
 
         }
 
-        public void add(Point p, Point slope)
+        public void add(Point p, Point slope, Point? lean = null)
         {
             points.Add(p);
             slopes.Add(slope);
+			if (lean != null)
+			{
+				leans.Add((Point)lean);
+			}
+
         }
 
 

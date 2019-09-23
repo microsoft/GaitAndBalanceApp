@@ -20,6 +20,22 @@ namespace GaitAndBalanceApp
 
     }
 
+    public struct Extreams
+    {
+        public double minX, maxX, minZ, maxZ;
+        public long timeStamp;
+
+        public Extreams(double minX, double maxX, double minZ, double maxZ, long timeStamp)
+        {
+            this.minX = minX;
+            this.maxX = maxX;
+            this.minZ = minZ;
+            this.maxZ = maxZ;
+            this.timeStamp = timeStamp;
+        }
+    }
+
+
     public enum JointTypeGait
     {
         // The joints from Kinect One:
@@ -621,10 +637,21 @@ namespace GaitAndBalanceApp
         /// <param name="input"></param>
         /// <param name="projection"></param>
         /// <returns>returns false if the quality of the frame is too low</returns>
-        public bool getCOM(out float x, out float z, out float slopeX, out float slopeZ, EinputMode input = EinputMode.line, EprojectionMode projection = EprojectionMode.ground)
+        public bool getCOM(out float x, out float z, out float slopeX, out float slopeZ, out Extreams extreamValues, EinputMode input = EinputMode.line, EprojectionMode projection = EprojectionMode.ground)
         {
             slopeX = slopeZ = 0;
+            float minX = -1, maxX = -1, minZ = -1, maxZ = -1;
             float y;
+            if (input != EinputMode.wii && silhouette.points.Length > 0)
+            {
+                var halfX = silhouette.xRange / 2;
+                minX = silhouette.points.Min(p => p.X) * silhouette.xRange / 256 - halfX;
+                maxX = silhouette.points.Max(p => p.X) * silhouette.xRange / 256 - halfX;
+                minZ = silhouette.points.Min(p => p.Z) * silhouette.zRange / 256;
+                maxZ = silhouette.points.Max(p => p.Z) * silhouette.zRange / 256;
+            }
+            extreamValues = new Extreams(minX, maxX, minZ, maxZ, FrameTime);
+            
             switch (input)
             {
                 case EinputMode.wii: 

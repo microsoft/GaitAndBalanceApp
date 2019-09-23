@@ -10,7 +10,7 @@ namespace GaitAndBalanceApp.UIComponents
     /// </summary>
     public partial class CameraViewTab : UserControl
     {
-        Kinect kinect = KinectFactory.instance;
+        Kinect kinect = KinectFactory.Instance;
         Timer subjectDisplayTimer;
         public bool IsCurrentTab
         {
@@ -32,7 +32,7 @@ namespace GaitAndBalanceApp.UIComponents
         {
             try
             {
-                var frame = kinect.getLastFrame();
+                var frame = kinect.GetLastFrame();
                 if (frame == null) return;
                 cameraView.frame = frame;
             }

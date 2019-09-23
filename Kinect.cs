@@ -26,7 +26,7 @@ namespace GaitAndBalanceApp
     {
         static readonly Kinect kinect = new Kinect();
 
-        public static Kinect instance { get { return kinect; } }
+        public static Kinect Instance { get { return kinect; } }
 
         KinectFactory() { }
     }
@@ -53,9 +53,9 @@ namespace GaitAndBalanceApp
         public double minimalDistanceFromCeilingOfSubject = 0.25;
         public int minimalNumberOfPixelsInSubject = 50;
         float _xRange, _yRange, _zRange;
-        public float xRange { get { return _xRange; } }
-        public float yRange { get { return _yRange; } }
-        public float zRange { get { return _zRange; } }
+        public float XRange { get { return _xRange; } }
+        public float YRange { get { return _yRange; } }
+        public float ZRange { get { return _zRange; } }
         public readonly int silhouetteBlockSize = 8;
         public ushort intensityBasedCutoffThreshold = 0;
 
@@ -82,7 +82,7 @@ namespace GaitAndBalanceApp
         public double mixTarget = 0.02; // The target mixing rate for the IIR for ground calculation
         double currentMix = 1.0; // Current mix rate - starts high to allow fast tracking of the ground
         double mixUpdateRate = 0.1; // the rate in which the updates converge to the desired update rate
-        int blockSize = 8; 
+        readonly int blockSize = 8; 
         Vector4[,] grounds;
         Vector[,] means;
         double[,] X, Y, Z, XX, XY, XZ, YY, YZ, ZZ;
@@ -98,18 +98,18 @@ namespace GaitAndBalanceApp
 
         private int bodyIndex = -1; // the index of the tracked body
 
-        object _lockForFrameInProcess = new object();
+        readonly object _lockForFrameInProcess = new object();
         DateTime currentTime;
         TimeSpan frameTime;
         Frame frame;
 
         public Kinect()
         {
-            init();
+            Init();
         }
 
         // Initialize the sensor, open reader
-        public void init()
+        public void Init()
         {
             kinectSensor = KinectSensor.GetDefault();                
             cm = kinectSensor.CoordinateMapper;
@@ -131,8 +131,8 @@ namespace GaitAndBalanceApp
 
             cameraPointBuffer = new CameraSpacePoint[bufferLength];
             cameraPointBufferForFloor = new CameraSpacePoint[bufferLength];
-            multiSourceReader = kinectSensor.OpenMultiSourceFrameReader(/*FrameSourceTypes.Body | FrameSourceTypes.BodyIndex |*/ FrameSourceTypes.Depth | FrameSourceTypes.Infrared);
-            multiSourceReader.MultiSourceFrameArrived += multiSourceReader_MultiSourceFrameArrived;                   
+            multiSourceReader = kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.BodyIndex | FrameSourceTypes.Depth | FrameSourceTypes.Infrared);
+            multiSourceReader.MultiSourceFrameArrived += MultiSourceReader_MultiSourceFrameArrived;                   
             int xSize = (kinectSensor.DepthFrameSource.FrameDescription.Width + blockSize - 1) / blockSize;
             int ySize = (kinectSensor.DepthFrameSource.FrameDescription.Height + blockSize - 1) / blockSize;
             X = new double[xSize, ySize];
@@ -170,7 +170,7 @@ namespace GaitAndBalanceApp
             kinectSensor.Close();
         }
 
-        void updateFrameRate(DateTime currentTime)
+        void UpdateFrameRate(DateTime currentTime)
         {
             var interval = (currentTime - lastFrameUpdate).TotalSeconds;
             lastFrameUpdate = currentTime;
@@ -179,21 +179,23 @@ namespace GaitAndBalanceApp
         }
 
         // A Kinect One Joint to our defined structure
-         JointGait jointToJointGait(Joint joint)
+         JointGait JointToJointGait(Joint joint)
         {
-            JointGait jointGait = new JointGait();
-            jointGait.JointType = (JointTypeGait)joint.JointType;
-            jointGait.TrackingState = (TrackingStateGait)joint.TrackingState;
-            jointGait.X = joint.Position.X;
-            jointGait.Y = joint.Position.Y;
-            jointGait.Z = joint.Position.Z;
+            JointGait jointGait = new JointGait
+            {
+                JointType = (JointTypeGait)joint.JointType,
+                TrackingState = (TrackingStateGait)joint.TrackingState,
+                X = joint.Position.X,
+                Y = joint.Position.Y,
+                Z = joint.Position.Z
+            };
             DepthSpacePoint depthSpacePoint = cm.MapCameraPointToDepthSpace(joint.Position);
             jointGait.DepthX = depthSpacePoint.X;
             jointGait.DepthY = depthSpacePoint.Y;
             return jointGait;
         }
 
-        unsafe void computeAllHeights(CameraSpacePoint[] cameraPoints, double[] heightsTable, Vector4 ground)
+        unsafe void ComputeAllHeights(CameraSpacePoint[] cameraPoints, double[] heightsTable, Vector4 ground)
         {
             fixed (CameraSpacePoint* cameraPointer = cameraPoints)
             fixed (double* heights = heightsTable)
@@ -208,13 +210,13 @@ namespace GaitAndBalanceApp
             }
 
         }
-        double getHeight(Vector p, Vector4 floor)
+        double GetHeight(Vector p, Vector4 floor)
         {
             return floor.X * p.X + floor.Y * p.Y + floor.Z * p.Z - floor.W;
         }
 
 
-        int mergeComponents(int k1, int k2)
+        int MergeComponents(int k1, int k2)
         {
             if (k1 <= 0 || k1 == k2) return k2;
             if (k2 <= 0) return k1;
@@ -248,7 +250,7 @@ namespace GaitAndBalanceApp
             return t1;
         }        
 
-        unsafe void maskLargestConnectedComponent(ushort[] depthImageBuffer, CameraSpacePoint[] cameraPointBuffer, ushort[] infraRedBuffer, int width, int height)
+        unsafe void MaskLargestConnectedComponent(ushort[] depthImageBuffer, CameraSpacePoint[] cameraPointBuffer, ushort[] infraRedBuffer, int width, int height)
         {
             sizeOfComponent.Clear();
             componentMap.Clear();
@@ -317,11 +319,11 @@ namespace GaitAndBalanceApp
                             }
 
                             int k = -1;
-                            k1 = mergeComponents(k1, k2);
-                            k3 = mergeComponents(k3, k4);
-                            k5 = mergeComponents(k5, k6);
-                            k3 = mergeComponents(k3, k5);
-                            k = mergeComponents(k1, k3);
+                            k1 = MergeComponents(k1, k2);
+                            k3 = MergeComponents(k3, k4);
+                            k5 = MergeComponents(k5, k6);
+                            k3 = MergeComponents(k3, k5);
+                            k = MergeComponents(k1, k3);
 
                             if (k <= 0)
                             {
@@ -485,10 +487,10 @@ namespace GaitAndBalanceApp
                 groundX = ground.X,
                 groundY = ground.Y,
                 groundZ = ground.Z,
-                points = getPoints().ToArray(),
-                xRange = xRange,
-                yRange = yRange,
-                zRange = zRange,
+                points = GetPoints().ToArray(),
+                xRange = XRange,
+                yRange = YRange,
+                zRange = ZRange,
                 numberOfPixelsInBody = (int)numberOfPixelsInBody
             };
 
@@ -560,7 +562,7 @@ namespace GaitAndBalanceApp
 #endif
 
 
-        unsafe  void computeFloorsForPatchs(CameraSpacePoint[] cameraPointBuffer, Vector4[,] grounds, Vector[,] means, int blockSize)
+        unsafe  void ComputeFloorsForPatchs(CameraSpacePoint[] cameraPointBuffer, Vector4[,] grounds, Vector[,] means, int blockSize)
         {
             int width = kinectSensor.DepthFrameSource.FrameDescription.Width;
             int len = X.Length;
@@ -622,17 +624,17 @@ namespace GaitAndBalanceApp
                     }
                 }
             }
-            Parallel.For(0, 8, i => solveLocalGrounds(8, i, xSize, ySize));                            
+            Parallel.For(0, 8, i => SolveLocalGrounds(8, i, xSize, ySize));                            
 
         }
 
-        void solveLocalGrounds(int stepSize, int offset, int xSize, int ySize)
+        void SolveLocalGrounds(int stepSize, int offset, int xSize, int ySize)
         {
 
             for (int i = 0; i < xSize; i++)
                 for (int j = offset; j < ySize; j += stepSize)
                 {
-                    double loss = solveFloorOptimization(X[i, j], Y[i, j], Z[i, j], XX[i, j], XY[i, j], XZ[i, j], YY[i, j], YZ[i, j], ZZ[i, j], n[i, j],
+                    double loss = SolveFloorOptimization(X[i, j], Y[i, j], Z[i, j], XX[i, j], XY[i, j], XZ[i, j], YY[i, j], YZ[i, j], ZZ[i, j], n[i, j],
                         out grounds[i, j]);
                     if (Double.IsInfinity(loss) || Double.IsNaN(loss)) // failed to find floor
                     {
@@ -649,7 +651,7 @@ namespace GaitAndBalanceApp
 
                 }
         }
-        double solveFloorOptimization(double X, double Y, double Z, double XX, double XY, double XZ, double YY, double YZ, double ZZ, int n, 
+        double SolveFloorOptimization(double X, double Y, double Z, double XX, double XY, double XZ, double YY, double YZ, double ZZ, int n, 
             out Vector4 ground)
         {
             ground.W = ground.X = ground.Y = ground.Z = 0;
@@ -682,10 +684,10 @@ namespace GaitAndBalanceApp
                 }
             }
         }
-        void computeNewFloor(CameraSpacePoint[] cameraPointBuffer)
+        void ComputeNewFloor(CameraSpacePoint[] cameraPointBuffer)
         {
             int[] count = new int[grounds.Length];
-            computeFloorsForPatchs(cameraPointBuffer, grounds, means, blockSize);
+            ComputeFloorsForPatchs(cameraPointBuffer, grounds, means, blockSize);
             int maxCountIndex = 0;
             int lineLength = grounds.GetLength(0);
             int i1 = 0, i2 = 0, j1 = 0, j2 = 0;
@@ -771,7 +773,7 @@ namespace GaitAndBalanceApp
             }
 
 
-            double loss = solveFloorOptimization(tX, tY, tZ, tXX, tXY, tXZ, tYY, tYZ, tZZ, tn, out newGround);
+            double loss = SolveFloorOptimization(tX, tY, tZ, tXX, tXY, tXZ, tYY, tYZ, tZZ, tn, out newGround);
 
             if (Double.IsInfinity(loss) || Double.IsNaN(loss)) // failed to find floor
             {
@@ -791,7 +793,7 @@ namespace GaitAndBalanceApp
                     i2++;
                 }
                 if (Double.IsNaN(means[i1, i2].Y) || Double.IsInfinity(means[i1, i2].Y)) continue;
-                double h = getHeight(means[i1, i2], newGround);
+                double h = GetHeight(means[i1, i2], newGround);
                 tempCeiling = Math.Max(tempCeiling, h);
             }
             if (tempCeiling > 2) newCeiling = tempCeiling;
@@ -799,9 +801,9 @@ namespace GaitAndBalanceApp
         }
 
 
-        IEnumerable<SilhouettePoint> getPoints()
+        IEnumerable<SilhouettePoint> GetPoints()
         {
-            float halfXRange = xRange / 2;
+            float halfXRange = XRange / 2;
             for (int i = 0; i < silhouetteCount.Length; i++)
             {
                 if (silhouetteCount[i] > 0)
@@ -815,13 +817,13 @@ namespace GaitAndBalanceApp
                     // fix the Z coordinate in case it is not tangent to the ground vector
                     double dist = Math.Sqrt(avgY * avgY + avgZ * avgZ - heightProjection * heightProjection);
                     if (Math.Abs(avgX) > halfXRange) continue;
-                    if (h > yRange || h < 0) continue;
-                    if (dist > zRange || dist < 0) continue;
+                    if (h > YRange || h < 0) continue;
+                    if (dist > ZRange || dist < 0) continue;
                     SilhouettePoint p = new SilhouettePoint()
                     {
-                        X = (byte)(255 * ((avgX + halfXRange) / xRange)),
-                        Y = (byte)(255 * (h / yRange)),
-                        Z = (byte)(255 * (dist / zRange)),
+                        X = (byte)(255 * ((avgX + halfXRange) / XRange)),
+                        Y = (byte)(255 * (h / YRange)),
+                        Z = (byte)(255 * (dist / ZRange)),
                         Confidence = (byte)(255 * silhouetteCount[i] / (silhouetteBlockSize * silhouetteBlockSize))
                     };
                     yield return p;
@@ -829,7 +831,7 @@ namespace GaitAndBalanceApp
             }
         }
 
-        void processBodyFrame(CameraSpacePoint[] cameraPointBuffer, Frame frame, int bodyIndex)
+        void ProcessBodyFrame(CameraSpacePoint[] cameraPointBuffer, Frame frame, int bodyIndex)
         {
             if (frame == null) return;
 
@@ -878,7 +880,7 @@ namespace GaitAndBalanceApp
             }
         }
 
-        Frame generateDataFrame(BodyFrame bodyFrame, DateTime currentTime, TimeSpan frameTime)
+        Frame GenerateDataFrame(BodyFrame bodyFrame, DateTime currentTime, TimeSpan frameTime)
         {
             Frame frame = null;
 
@@ -897,7 +899,7 @@ namespace GaitAndBalanceApp
                 if (bodyIndex >= 0)
                 {
                     var body = bodiesArray[bodyIndex];
-                    List<JointGait> jointList = body.Joints.Select(joint => jointToJointGait(joint.Value)).ToList();
+                    List<JointGait> jointList = body.Joints.Select(joint => JointToJointGait(joint.Value)).ToList();
                     frameTime = bodyFrame.RelativeTime - curStartTime;
                     frame = new Frame(SensorType.One, frameNum, (long)frameTime.TotalMilliseconds, currentTime.Ticks, body.TrackingId, jointList, bodyFrame.FloorClipPlane.W,
                                     bodyFrame.FloorClipPlane.X, bodyFrame.FloorClipPlane.Y, bodyFrame.FloorClipPlane.Z, (int)body.ClippedEdges, body.Lean.X, body.Lean.Y,
@@ -911,7 +913,7 @@ namespace GaitAndBalanceApp
             return frame;
         }
 
-        bool handleKinectFrame(MultiSourceFrameArrivedEventArgs e)
+        bool HandleKinectFrame(MultiSourceFrameArrivedEventArgs e)
         {
             currentTime = DateTime.Now;
             MultiSourceFrameReference frameReference = e.FrameReference;
@@ -962,12 +964,12 @@ namespace GaitAndBalanceApp
                 if (frameNum == 0)
                     curStartTime = depthFrame.RelativeTime;   // start the clock
                 frameTime = depthFrame.RelativeTime - curStartTime;
-                frame = generateDataFrame(bodyFrame, currentTime, frameTime);
+                frame = GenerateDataFrame(bodyFrame, currentTime, frameTime);
                 Task bodyTask = Task.Run(() =>
                 {
-                    updateFrameRate(currentTime);
+                    UpdateFrameRate(currentTime);
                     if (bodyIndexFrame != null)
-                        processBodyFrame(cameraPointBuffer, frame, bodyIndex);
+                        ProcessBodyFrame(cameraPointBuffer, frame, bodyIndex);
                 });
                 cm.MapDepthFrameToCameraSpace(depthImageBuffer, cameraPointBuffer);
                 if (groundTask == null || groundTask.IsCompleted)
@@ -985,12 +987,12 @@ namespace GaitAndBalanceApp
                         currentMix = currentMix * (1 - mixUpdateRate) + mixTarget * mixUpdateRate;
                     }
                     if (groundTask != null) groundTask.Dispose();
-                    groundTask = Task.Run(() => computeNewFloor(cameraPointBuffer)); // we do not wait for this task to complete. If it takes multiple frames, thats OK.
+                    groundTask = Task.Run(() => ComputeNewFloor(cameraPointBuffer)); // we do not wait for this task to complete. If it takes multiple frames, thats OK.
                 }
                 var height = kinectSensor.DepthFrameSource.FrameDescription.Height;
                 var width = kinectSensor.DepthFrameSource.FrameDescription.Width;
-                computeAllHeights(cameraPointBuffer, heights, ground);
-                maskLargestConnectedComponent(depthImageBuffer, cameraPointBuffer, infraRedBuffer, width, height);
+                ComputeAllHeights(cameraPointBuffer, heights, ground);
+                MaskLargestConnectedComponent(depthImageBuffer, cameraPointBuffer, infraRedBuffer, width, height);
                 bodyTask.Wait();
                 memory.addFrame(frame);
                 return true;
@@ -1019,29 +1021,29 @@ namespace GaitAndBalanceApp
             }
         }
 
-        void multiSourceReader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
+        void MultiSourceReader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
-            Task.Run(() => handleKinectFrame(e)); // run on a separate task so we can release the main thread
+            Task.Run(() => HandleKinectFrame(e)); // run on a separate task so we can release the main thread
         }
 
 
-        public Frame getLastFrame() 
+        public Frame GetLastFrame() 
         {
-            return memory != null ? memory.lastFrame : null;
+            return memory?.lastFrame;
         }
 
-        public Frame getNextFrame(long frameId) 
+        public Frame GetNextFrame(long frameId) 
         {
-            return memory != null ? memory.next(frameId) : null;
+            return memory?.next(frameId);
         }
 
-        public bool framesAvailable()
+        public bool FramesAvailable()
         {
             if (memory != null) return memory.framesAvailable;
             else return false;
         }
 
-        public bool writeToFile(string filename, long startFrameId, long endFrameId)
+        public bool WriteToFile(string filename, long startFrameId, long endFrameId)
         {
             if (memory != null)
             {
@@ -1051,7 +1053,7 @@ namespace GaitAndBalanceApp
             return false;
         }
 
-        public void clearMemory()
+        public void ClearMemory()
         {
             memory.Clear();
             GC.Collect();

@@ -9,9 +9,9 @@ namespace GaitAndBalanceApp.Analysis
     {
         public string name {get; set;}
 
-        public enum ESegmentType { Walking, Standing, Turning, WalkingAwayFromSensor, SittingDown, WalkingToSensor, StandingUp };
+        public enum ESegmentType { Walking, Standing, Turning, WalkingAwayFromSensor, SittingDown, WalkingToSensor, StandingUp, Sitting, WalkingToSensorRight, WalkingAwayFromSensorRight, WalkingRightCloseToSensor, WalkingLeftCloseToSensor, WalkingRightFarFromSensor, WalkingLeftFarFromSensor, Square1, Square2, Square3, Square4 };
 
-        public List<Metric> analyzeAndAnnotate(string inputFileName)
+		public List<Metric> analyzeAndAnnotate(string inputFileName)
         {
             Logger.log("Analyzer: analyzing {0}", inputFileName);
             try {

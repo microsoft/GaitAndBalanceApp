@@ -144,7 +144,7 @@ namespace GaitAndBalanceApp.Analysis
                 //    value = freqMetric.FreqDispersion
                 //});
                 var fftStats = new FFTStats(segment, FFTStats.EDirection.Z, true);
-                var stepFreq = fftStats.getPeekFrequency();
+                var stepFreq = fftStats.GetPeekFrequency();
                 metrics.Add(new Metric
                 {
                     name = "step duration" + segmentString,
