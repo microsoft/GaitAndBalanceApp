@@ -89,7 +89,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Kinect, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
       <HintPath>packages\Microsoft.Kinect.2.0.1410.19000\lib\net45\Microsoft.Kinect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
@@ -111,8 +110,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="SignalProc">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Sho 2.1\packages\SignalProc\SignalProc.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files (x86)\Sho 2.1\packages\SignalProc\SignalProc.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -141,10 +139,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Analysis\ChairStandAnalyzer.cs" />
     <Compile Include="Analysis\Ellipse.cs" />
     <Compile Include="Analysis\Exercises.cs" />
     <Compile Include="Analysis\Analyzer.cs" />
     <Compile Include="Analysis\FFTStats.cs" />
+    <Compile Include="Analysis\FourStepSquareAnalyzer.cs" />
+    <Compile Include="Analysis\ReachAnalyzer.cs" />
     <Compile Include="Analysis\SegmentedGaitAnalyzer.cs" />
     <Compile Include="Analysis\GaitAnalyzer.cs" />
     <Compile Include="Analysis\Metric.cs" />

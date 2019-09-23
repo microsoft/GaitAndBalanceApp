@@ -151,12 +151,12 @@ namespace GaitAndBalanceApp.Analysis
             metrics.Add(new Metric
             {
                 name = "step duration",
-                value = fftStats.Select(stat => 1.0 / stat.getPeekFrequency()).Median()
+                value = fftStats.Select(stat => 1.0 / stat.GetPeekFrequency()).Median()
             });
             metrics.Add(new Metric
             {
                 name = "step length",
-                value = fftStats.Zip(walkingTrajectories, (stat, trj) => trj.progressLength() / (stat.getPeekFrequency() * trj.duratation())).Median()
+                value = fftStats.Zip(walkingTrajectories, (stat, trj) => trj.progressLength() / (stat.GetPeekFrequency() * trj.duratation())).Median()
             });
 
 

@@ -125,7 +125,7 @@ namespace GaitAndBalanceApp.UIComponents
             if (!Double.IsNaN(p.z))
             {
                 timeLineEllipse.Margin = new Thickness((p.z - minZ) * scale - timeLineEllipse.Width / 2, (p.x - minX) * scale - timeLineEllipse.Height / 2, 0, 0);
-                subjectView.frame = frames[val];
+                subjectView.Frame = frames[val];
             }
             var segmentType = "-";
             frameToSegmentName.TryGetValue(p.timeStamp, out segmentType);

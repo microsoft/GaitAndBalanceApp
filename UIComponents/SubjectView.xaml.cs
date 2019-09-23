@@ -14,7 +14,7 @@ namespace GaitAndBalanceApp.UIComponents
     public partial class SubjectView : UserControl
     {
         Frame _frame;
-        public Frame frame
+        public Frame Frame
         {
             get { return _frame; }
             set
@@ -22,7 +22,7 @@ namespace GaitAndBalanceApp.UIComponents
                 if (_frame != value)
                 {
                     _frame = value;
-                    try { drawSubject(); }
+                    try { DrawSubject(); }
                     catch (TaskCanceledException) { }
                 }
             }
@@ -95,10 +95,12 @@ namespace GaitAndBalanceApp.UIComponents
                 sideLabels = new Label[7];
                 for (int i = 0; i < sideLabels.Length; i++)
                 {
-                    Label l = new Label();
-                    l.Content = (i + 1).ToString();
-                    l.FontSize = 10;
-                    l.Opacity = 0.25;
+                    Label l = new Label
+                    {
+                        Content = (i + 1).ToString(),
+                        FontSize = 10,
+                        Opacity = 0.25
+                    };
                     sideView.Children.Add(l);
                     sideLabels[i] = l;
                 }
@@ -143,43 +145,47 @@ namespace GaitAndBalanceApp.UIComponents
             }
             if (drawLineModel)
             {
-                frontStick = new Line();
-                frontStick.Stroke = Brushes.Maroon;
-                frontStick.StrokeThickness = 1;
-                frontStick.StrokeDashArray = new DoubleCollection() { 4 };
+                frontStick = new Line
+                {
+                    Stroke = Brushes.Maroon,
+                    StrokeThickness = 1,
+                    StrokeDashArray = new DoubleCollection() { 4 }
+                };
                 frontView.Children.Add(frontStick);
 
-                frontAngel = new Label();
-                frontAngel.FontSize = 20;
-                frontAngel.Foreground = Brushes.Maroon;
+                frontAngel = new Label
+                {
+                    FontSize = 20,
+                    Foreground = Brushes.Maroon
+                };
                 frontView.Children.Add(frontAngel);
 
-                sideStick = new Line();
-                sideStick.Stroke = Brushes.Maroon;
-                sideStick.StrokeThickness = 1;
-                sideStick.StrokeDashArray = new DoubleCollection() { 4 };
+                sideStick = new Line
+                {
+                    Stroke = Brushes.Maroon,
+                    StrokeThickness = 1,
+                    StrokeDashArray = new DoubleCollection() { 4 }
+                };
                 sideView.Children.Add(sideStick);
 
-                sideAngel = new Label();
-                sideAngel.FontSize = 20;
-                sideAngel.Foreground = Brushes.Maroon;
+                sideAngel = new Label
+                {
+                    FontSize = 20,
+                    Foreground = Brushes.Maroon
+                };
                 sideView.Children.Add(sideAngel);
             }
-            this.SizeChanged += sizeChanged;
+            this.SizeChanged += ViewChanged;
 
         }
 
-        private void sizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
-        {
-            viewChanged();
-        }
 
-        private double positive(double x)
+        private double Positive(double x)
         {
             return (x < 0) ? 0 : x;
         }
 
-        private void viewChanged()
+        private void ViewChanged(object sender, System.Windows.SizeChangedEventArgs e)
         {
             if (!drawGrid) return;
             sideView.Dispatcher.Invoke(new Action(delegate()
@@ -224,9 +230,9 @@ namespace GaitAndBalanceApp.UIComponents
         }
 
 
-        private void drawSubject()
+        private void DrawSubject()
         {
-            if (frame == null) return;
+            if (Frame == null) return;
             byte[] frontPixels = new byte[4 * 256 * 256];
             byte[] sidePixels = new byte[4 * 256 * 256];
             double xScaleSide, yScaleSide, xScaleFront, yScaleFront;
@@ -236,12 +242,12 @@ namespace GaitAndBalanceApp.UIComponents
             yScaleFront = frontView.ActualHeight / yRange;
             float halfXRange = xRange / 2;
 
-            if (frame.silhouette.points != null && frame.silhouette.points.Length > 0 && drawSilhouette)
+            if (Frame.silhouette.points != null && Frame.silhouette.points.Length > 0 && drawSilhouette)
             {
 
-                xRange = frame.silhouette.xRange;
-                yRange = frame.silhouette.yRange;
-                zRange = frame.silhouette.zRange;
+                xRange = Frame.silhouette.xRange;
+                yRange = Frame.silhouette.yRange;
+                zRange = Frame.silhouette.zRange;
                 xScaleSide = sideView.ActualWidth / zRange;
                 yScaleSide = sideView.ActualHeight / yRange;
                 xScaleFront = frontView.ActualWidth / xRange;
@@ -251,7 +257,7 @@ namespace GaitAndBalanceApp.UIComponents
                 byte silhouetteGreen = silhouetteColor.G;
                 byte silhouetteBlue = silhouetteColor.B;
 
-                foreach (var p in frame.silhouette.points)
+                foreach (var p in Frame.silhouette.points)
                 {
                     int x = p.X;
                     int y = 255 - p.Y;
@@ -288,7 +294,7 @@ namespace GaitAndBalanceApp.UIComponents
                     }
                 };
             }
-            if (frame.Joints != null && drawSkeleton)
+            if (Frame.Joints != null && drawSkeleton)
             {
 
                 sideView.Dispatcher.Invoke(new Action(delegate()
@@ -296,17 +302,16 @@ namespace GaitAndBalanceApp.UIComponents
                     var brush = new SolidColorBrush(skeletonColor);
                     for (int i = 0; i < frontViewBones.Length; i++)
                     {
-                        float x, y, z;
-                        var t1 = frame.getJointPositionFromGround(bonesEndPoints[i * 2], false, out x, out y, out z);
-                        frontViewBones[i].X1 = positive((x + halfXRange) * xScaleFront);
-                        frontViewBones[i].Y1 = positive((yRange - y) * yScaleFront);
-                        sideViewBones[i].X1 = positive(z * xScaleSide);
-                        sideViewBones[i].Y1 = positive((yRange - y) * yScaleSide);
-                        var t2 = frame.getJointPositionFromGround(bonesEndPoints[i * 2 + 1], false, out x, out y, out z);
-                        frontViewBones[i].X2 = positive((x + halfXRange) * xScaleFront);
-                        frontViewBones[i].Y2 = positive((yRange - y) * yScaleFront);
-                        sideViewBones[i].X2 = positive(z * xScaleSide);
-                        sideViewBones[i].Y2 = positive((yRange - y) * yScaleSide);
+                        var t1 = Frame.getJointPositionFromGround(bonesEndPoints[i * 2], false, out float x, out float y, out float z);
+                        frontViewBones[i].X1 = Positive((x + halfXRange) * xScaleFront);
+                        frontViewBones[i].Y1 = Positive((yRange - y) * yScaleFront);
+                        sideViewBones[i].X1 = Positive(z * xScaleSide);
+                        sideViewBones[i].Y1 = Positive((yRange - y) * yScaleSide);
+                        var t2 = Frame.getJointPositionFromGround(bonesEndPoints[i * 2 + 1], false, out x, out y, out z);
+                        frontViewBones[i].X2 = Positive((x + halfXRange) * xScaleFront);
+                        frontViewBones[i].Y2 = Positive((yRange - y) * yScaleFront);
+                        sideViewBones[i].X2 = Positive(z * xScaleSide);
+                        sideViewBones[i].Y2 = Positive((yRange - y) * yScaleSide);
 
                         if (t1 != TrackingStateGait.Tracked || t2 != TrackingStateGait.Tracked)
                         {
@@ -322,8 +327,7 @@ namespace GaitAndBalanceApp.UIComponents
                 }));
             }
 
-            float xCom, zCom, slopeX, slopeZ;
-            frame.getCOM(out xCom, out zCom, out slopeX, out slopeZ, input, projection);
+            Frame.getCOM(out float xCom, out float zCom, out float slopeX, out float slopeZ, out Extreams extreamValues, input, projection);
 
 
             sideView.Dispatcher.Invoke(new Action(delegate()
@@ -335,26 +339,25 @@ namespace GaitAndBalanceApp.UIComponents
                     BitmapSource sideSource = BitmapSource.Create(256, 256, 100, 100, PixelFormats.Bgra32, null, sidePixels, 256 * 4);
                     sideImage.Source = sideSource;
                 }
-                calibration.Value = frame.silhouette.trackQuality;
-                if (frame.silhouette.trackQuality == 0)
+                calibration.Value = Frame.silhouette.trackQuality;
+                if (Frame.silhouette.trackQuality == 0)
                     calibration.Background = Brushes.Orange;
-                else if (frame.silhouette.trackQuality < 100)
+                else if (Frame.silhouette.trackQuality < 100)
                     calibration.Background = Brushes.Red;
-                else if (frame.silhouette.trackQuality < 200)
+                else if (Frame.silhouette.trackQuality < 200)
                     calibration.Background = Brushes.Yellow;
                 else calibration.Background = Brushes.AntiqueWhite;
                 xPosition.Text = xCom.ToString("n2");
                 zPosition.Text = zCom.ToString("n2");
-                frameNumber.Content = frame.FrameNumber.ToString();
+                frameNumber.Content = Frame.FrameNumber.ToString();
                 // draw line (stick) model
                 if (drawLineModel)
                 {
-                    float silhouetteSlopeX, silhouetteSlopeZ, silhouetteOffsetX, silhouetteOffsetZ;
-                    frame.getStickModelFromSilhouette(out silhouetteSlopeX, out silhouetteSlopeZ, out silhouetteOffsetX, out silhouetteOffsetZ, EprojectionMode.ground);
+                    Frame.getStickModelFromSilhouette(out float silhouetteSlopeX, out float silhouetteSlopeZ, out float silhouetteOffsetX, out float silhouetteOffsetZ, EprojectionMode.ground);
                     int maxHeight = 0;
-                    if (frame.silhouette.points != null && frame.silhouette.points.Length > 0)
+                    if (Frame.silhouette.points != null && Frame.silhouette.points.Length > 0)
                     {
-                        foreach (var p in frame.silhouette.points)
+                        foreach (var p in Frame.silhouette.points)
                             if (p.Y > maxHeight) maxHeight = p.Y;
                     }
                     double stickHeight = yRange * maxHeight / 256;
